@@ -2,10 +2,10 @@
 
 enum e_type
 {
-	CHAR,
-	INT,
-	FLOAT,
-	DOUBLE,
+	CHAR = 0,
+	INT = 1,
+	FLOAT = 2,
+	DOUBLE = 3,
 	UNKNOWN
 };
 
