@@ -35,11 +35,10 @@ int	ft_isprint(int c)
 	return (c >= 32 && c <= 126);
 }
 
-// INT_MAX = 2147483647
-// INT_MIN = -2147483648
-int	anti_overflow_atoi(const char *input, int *result)
+int	detect_int_overflow(const char *input)
 {
 	int	sign = 0;
+	int	i;
 
 	if (input[0] == '+' || input[0] == '-')
 		sign++;
@@ -51,13 +50,29 @@ int	anti_overflow_atoi(const char *input, int *result)
 			return (1);
 		else if (input[sign] == '2')
 		{
-			*result = atoi(input + sign + 1);
-			if (*result > 147483647 + (input[0] == '-'))
+			i = atoi(input + sign + 1);
+			if (i > 147483647 + (input[0] == '-'))
 				return (1);
-			*result = (*result + 2000000000) * (input[0] == '-' ? -1 : 1);
 			return (0);
 		}
 	}
+	return (0);
+}
+
+// INT_MAX = 2147483647
+// INT_MIN = -2147483648
+int	anti_overflow_atoi(const char *input, int *result)
+{
+	if (detect_int_overflow(input))
+		return (1);
 	*result = atoi(input);
+	return (0);
+}
+
+int	has_dot(const char *input)
+{
+	for (int i = 0; input[i]; i++)
+		if (input[i] == '.')
+			return (1);
 	return (0);
 }

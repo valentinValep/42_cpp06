@@ -1,5 +1,5 @@
-NAME := exec
-TEST_NAME := test_exec
+NAME := convert
+TEST_NAME := test_convert
 
 CXX := c++
 

@@ -1,6 +1,9 @@
 #include "ScalarConverter.hpp"
 #include "utils.hpp"
 #include <iostream>
+#include <limits>
+#include <cstdlib>
+#include <cerrno>
 
 ScalarConverter::ScalarConverter()
 {
@@ -92,6 +95,68 @@ static void	convert_int(const char *input)
 	std::cout << "double: " << static_cast<double>(i) << ".0" << std::endl;
 }
 
+// Float max : ./convert 340282346638528859811704183484516925440.f
+static void	convert_float(const char *input)
+{
+	double	d = atof(input);
+	if ((errno == ERANGE || d < std::numeric_limits<float>::min() || d > std::numeric_limits<float>::max()) && has_dot(input))
+	{
+		std::cerr << "float overflow" << std::endl;
+		return ;
+	}
+	float	f = static_cast<float>(d);
+
+	if (f == 0 && input[0] == '-')
+		f = -0.0f;
+	// char output
+	if (f < 0 || f > 255 || !ft_strcmp(input, "nanf"))
+		std::cout << "char: impossible" << std::endl;
+	else if (!ft_isprint(static_cast<int>(f)))
+		std::cout << "char: Non displayable" << std::endl;
+	else
+		std::cout << "char: '" << static_cast<char>(f) << "'" << std::endl;
+	// int output
+	if (f < -2147483648.f || f > 2147483647.f || !ft_strcmp(input, "nanf"))
+		std::cout << "int: impossible" << std::endl;
+	else
+		std::cout << "int: " << static_cast<int>(f) << std::endl;
+	std::cout << "float: " << f << (has_dot(input)? ".0f" : "f") << std::endl;
+	std::cout << "double: " << static_cast<double>(f) << (has_dot(input)? ".0" : "") << std::endl;
+}
+
+// Double max : ./convert 179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.
+static void	convert_double(const char *input)
+{
+	double	d = atof(input);
+	if (errno == ERANGE && has_dot(input))
+	{
+		std::cerr << "double overflow" << std::endl;
+		return ;
+	}
+
+	if (d == 0 && input[0] == '-')
+		d = -0.0;
+	// char output
+	if (d < 0 || d > 255 || !ft_strcmp(input, "nan"))
+		std::cout << "char: impossible" << std::endl;
+	else if (!ft_isprint(static_cast<int>(d)))
+		std::cout << "char: Non displayable" << std::endl;
+	else
+		std::cout << "char: '" << static_cast<char>(d) << "'" << std::endl;
+	// int output
+	if (d < -2147483648.0 || d > 2147483647.0  || !ft_strcmp(input, "nan"))
+		std::cout << "int: impossible" << std::endl;
+	else
+		std::cout << "int: " << static_cast<int>(d) << std::endl;
+	// float output
+	if ((d < std::numeric_limits<float>::min() || d > std::numeric_limits<float>::max())
+		&& has_dot(input))
+		std::cout << "float: impossible" << std::endl;
+	else
+		std::cout << "float: " << static_cast<float>(d) << (has_dot(input)? ".0f" : "f") << std::endl;
+	std::cout << "double: " << d << (has_dot(input)? ".0" : "") << std::endl;
+}
+
 void ScalarConverter::convert(const char *input)
 {
 	e_type	type = get_type(input);
@@ -107,5 +172,5 @@ void ScalarConverter::convert(const char *input)
 		std::cerr << "Undefine type" << std::endl;
 		return ;
 	}
-	(void (*[])(const char *)){convert_char, convert_int, convert_char, convert_char}[type](input);
+	(void (*[])(const char *)){convert_char, convert_int, convert_float, convert_double}[type](input);
 }
