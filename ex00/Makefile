@@ -13,7 +13,7 @@ TEST_OBJ := test.o
 
 INCLUDES := -I.
 
-DEPS := ${OBJ:.o=.d}
+DEPS := ${OBJ:.o=.d} ${MAIN_OBJ:.o=.d} ${TEST_OBJ:.o=.d}
 
 RM := rm -f
 
