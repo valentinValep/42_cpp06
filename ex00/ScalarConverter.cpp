@@ -77,6 +77,21 @@ static void	convert_char(const char *input)
 	std::cout << "double: " << static_cast<double>(c) << ".0" << std::endl;
 }
 
+static int	is_double_integer(const char *input)
+{
+	int i = 0;
+
+	if (!has_dot(input))
+		return (0);
+	while (input[i] != '.')
+		i++;
+	i++;
+	while (input[i] && input[i] != 'f')
+		if (input[i++] != '0')
+			return (0);
+	return (1);
+}
+
 static void	convert_int(const char *input)
 {
 	int	i;
@@ -99,7 +114,7 @@ static void	convert_int(const char *input)
 static void	convert_float(const char *input)
 {
 	double	d = atof(input);
-	if ((errno == ERANGE || d < std::numeric_limits<float>::min() || d > std::numeric_limits<float>::max()) && has_dot(input))
+	if ((errno == ERANGE || d < -std::numeric_limits<float>::max() || d > std::numeric_limits<float>::max()) && has_dot(input))
 	{
 		std::cerr << "float overflow" << std::endl;
 		return ;
@@ -120,8 +135,8 @@ static void	convert_float(const char *input)
 		std::cout << "int: impossible" << std::endl;
 	else
 		std::cout << "int: " << static_cast<int>(f) << std::endl;
-	std::cout << "float: " << f << (has_dot(input)? ".0f" : "f") << std::endl;
-	std::cout << "double: " << static_cast<double>(f) << (has_dot(input)? ".0" : "") << std::endl;
+	std::cout << "float: " << f << (is_double_integer(input)? ".0f" : "f") << std::endl;
+	std::cout << "double: " << static_cast<double>(f) << (is_double_integer(input)? ".0" : "") << std::endl;
 }
 
 // Double max : ./convert 179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.
@@ -149,12 +164,12 @@ static void	convert_double(const char *input)
 	else
 		std::cout << "int: " << static_cast<int>(d) << std::endl;
 	// float output
-	if ((d < std::numeric_limits<float>::min() || d > std::numeric_limits<float>::max())
+	if ((d < -std::numeric_limits<float>::max() || d > std::numeric_limits<float>::max())
 		&& has_dot(input))
 		std::cout << "float: impossible" << std::endl;
 	else
-		std::cout << "float: " << static_cast<float>(d) << (has_dot(input)? ".0f" : "f") << std::endl;
-	std::cout << "double: " << d << (has_dot(input)? ".0" : "") << std::endl;
+		std::cout << "float: " << static_cast<float>(d) << (is_double_integer(input)? ".0f" : "f") << std::endl;
+	std::cout << "double: " << d << (is_double_integer(input)? ".0" : "") << std::endl;
 }
 
 void ScalarConverter::convert(const char *input)
