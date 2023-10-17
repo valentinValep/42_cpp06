@@ -82,6 +82,8 @@ static int	float_need_dot_zero(float f)
 {
 	std::stringstream	ss;
 
+	if (f != f || f == std::numeric_limits<float>::infinity() || f == -std::numeric_limits<float>::infinity())
+		return (0);
 	ss << f;
 	return (ss.str().find('.') == std::string::npos && ss.str().find('e') == std::string::npos);
 }
@@ -90,6 +92,8 @@ static int	double_need_dot_zero(double f)
 {
 	std::stringstream	ss;
 
+	if (f != f || f == std::numeric_limits<float>::infinity() || f == -std::numeric_limits<float>::infinity())
+		return (0);
 	ss << f;
 	return (ss.str().find('.') == std::string::npos && ss.str().find('e') == std::string::npos);
 }
