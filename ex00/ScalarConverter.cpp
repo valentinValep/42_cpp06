@@ -4,6 +4,7 @@
 #include <limits>
 #include <cstdlib>
 #include <cerrno>
+#include <sstream>
 
 ScalarConverter::ScalarConverter()
 {
@@ -77,19 +78,20 @@ static void	convert_char(const char *input)
 	std::cout << "double: " << static_cast<double>(c) << ".0" << std::endl;
 }
 
-static int	is_double_integer(const char *input)
+static int	float_need_dot_zero(float f)
 {
-	int i = 0;
+	std::stringstream	ss;
 
-	if (!has_dot(input))
-		return (0);
-	while (input[i] != '.')
-		i++;
-	i++;
-	while (input[i] && input[i] != 'f')
-		if (input[i++] != '0')
-			return (0);
-	return (1);
+	ss << f;
+	return (ss.str().find('.') == std::string::npos && ss.str().find('e') == std::string::npos);
+}
+
+static int	double_need_dot_zero(double f)
+{
+	std::stringstream	ss;
+
+	ss << f;
+	return (ss.str().find('.') == std::string::npos && ss.str().find('e') == std::string::npos);
 }
 
 static void	convert_int(const char *input)
@@ -101,13 +103,15 @@ static void	convert_int(const char *input)
 		std::cerr << "int overflow" << std::endl;
 		return ;
 	}
+	float	f = static_cast<float>(i);
+	double	d = static_cast<double>(i);
 	if (!ft_isprint(i))
 		std::cout << "char: Non displayable" << std::endl;
 	else
 		std::cout << "char: '" << static_cast<char>(i) << "'" << std::endl;
 	std::cout << "int: " << i << std::endl;
-	std::cout << "float: " << static_cast<float>(i) << ".0f" << std::endl;
-	std::cout << "double: " << static_cast<double>(i) << ".0" << std::endl;
+	std::cout << "float: " << f << (float_need_dot_zero(f)? ".0f" : "f") << std::endl;
+	std::cout << "double: " << d << (float_need_dot_zero(d)? ".0" : "") << std::endl;
 }
 
 // Float max : ./convert 340282346638528859811704183484516925440.f
@@ -120,6 +124,7 @@ static void	convert_float(const char *input)
 		return ;
 	}
 	float	f = static_cast<float>(d);
+	d = static_cast<double>(f);
 
 	if (f == 0 && input[0] == '-')
 		f = -0.0f;
@@ -135,8 +140,8 @@ static void	convert_float(const char *input)
 		std::cout << "int: impossible" << std::endl;
 	else
 		std::cout << "int: " << static_cast<int>(f) << std::endl;
-	std::cout << "float: " << f << (is_double_integer(input)? ".0f" : "f") << std::endl;
-	std::cout << "double: " << static_cast<double>(f) << (is_double_integer(input)? ".0" : "") << std::endl;
+	std::cout << "float: " << f << (float_need_dot_zero(f)? ".0f" : "f") << std::endl;
+	std::cout << "double: " << d << (double_need_dot_zero(d)? ".0" : "") << std::endl;
 }
 
 // Double max : ./convert 179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.
@@ -148,6 +153,7 @@ static void	convert_double(const char *input)
 		std::cerr << "double overflow" << std::endl;
 		return ;
 	}
+	float	f = static_cast<float>(d);
 
 	if (d == 0 && input[0] == '-')
 		d = -0.0;
@@ -168,8 +174,8 @@ static void	convert_double(const char *input)
 		&& has_dot(input))
 		std::cout << "float: impossible" << std::endl;
 	else
-		std::cout << "float: " << static_cast<float>(d) << (is_double_integer(input)? ".0f" : "f") << std::endl;
-	std::cout << "double: " << d << (is_double_integer(input)? ".0" : "") << std::endl;
+		std::cout << "float: " << f << (float_need_dot_zero(f)? ".0f" : "f") << std::endl;
+	std::cout << "double: " << d << (double_need_dot_zero(d)? ".0" : "") << std::endl;
 }
 
 void ScalarConverter::convert(const char *input)
